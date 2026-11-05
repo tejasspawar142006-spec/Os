@@ -1,0 +1,139 @@
+
+-pthread
+
+#include <stdio.h>
+#include <pthread.h>
+#include <time.h>
+
+#define MAX 1000000
+
+int array[MAX];
+
+typedef struct {
+    int start;
+    int end;
+    long long sum;
+} ThreadData;
+
+void *calculate_sum(void *arg)
+{
+    ThreadData *data = (ThreadData *)arg;
+
+    data->sum = 0;
+
+    for (int i = data->start; i < data->end; i++) {
+        data->sum += array[i];
+    }
+
+    return NULL;
+}
+
+int main()
+{
+    int num_threads;
+
+    printf("Enter number of threads: ");
+    scanf("%d", &num_threads);
+
+    if (num_threads < 1 || num_threads > MAX) {
+        printf("Invalid number of threads!\n");
+        return 1;
+    }
+
+    for (int i = 0; i < MAX; i++) {
+        array[i] = 1;
+    }
+
+    pthread_t threads[num_threads];
+    ThreadData data[num_threads];
+
+    int chunk = MAX / num_threads;
+
+    clock_t start = clock();
+
+    for (int i = 0; i < num_threads; i++) {
+        data[i].start = i * chunk;
+
+        data[i].end = (i == num_threads - 1)
+                    ? MAX
+                    : (i + 1) * chunk;
+
+        pthread_create(
+            &threads[i],
+            NULL,
+            calculate_sum,
+            &data[i]
+        );
+    }
+
+    for (int i = 0; i < num_threads; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    long long total_sum = 0;
+
+    for (int i = 0; i < num_threads; i++) {
+        total_sum += data[i].sum;
+    }
+
+    clock_t end = clock();
+
+    double execution_time =
+        (double)(end - start) / CLOCKS_PER_SEC;
+
+    printf("\nTotal Sum = %lld\n", total_sum);
+    printf("Number of Threads = %d\n", num_threads);
+    printf("Execution Time = %.6f seconds\n", execution_time);
+
+    return 0;
+}
+
+# Assignment No. 4
+
+**Title:** Multithreading and Resource Utilization
+
+### Objectives:
+
+To understand & implement multithreading using POSIX threads for executing multiple tasks concurrently. To measure execution time and compare performance of the application with different numbers of threads.
+
+### Problem Statement:
+
+Create multithreaded application using POSIX threads to execute concurrent task. Measure CPU utilization, memory consumption, and execution time under different thread configurations.
+
+### Software:
+
+Ubuntu / WSL / Virtual Machine, VS Code, GCC Compiler, Linux time
+
+### Hardware:
+
+Computer with minimum 2 GB RAM, 20 GB HDD
+
+### Theory:
+
+A thread is a smallest unit of CPU execution within process.
+
+Multiple threads of the same process can execute concurrently & share resources such as:
+
+* Code
+* Memory
+* Data
+* Files
+ 
+* Algorithm
+
+Start
+Create a large array.
+Enter the number of threads.
+Divide the array into equal parts.
+Create the required threads.
+Each thread calculates sum of its assigned part.
+Wait for all threads using pthread_join().
+Add the partial sums.
+Display the final result.
+Measure execution time of resource utilization.
+Repeat for different thread counts.
+Stop.
+
+*Conclusion:
+Thus, a multithreaded application was successfully developed using POSIX threads, and its execution time,
+CPU utilization and memory consumption were measured for different thread configurations.
